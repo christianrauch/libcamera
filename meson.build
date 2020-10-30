@@ -169,6 +169,11 @@ if get_option('test') and 'vimc' not in pipelines
     pipelines += ['vimc']
 endif
 
+# Force enable the Vivid pipeline on the development branch only.
+if 'vivid' not in pipelines
+    pipelines += ['vivid']
+endif
+
 # Utilities are parsed first to provide support for other components.
 subdir('utils')
 

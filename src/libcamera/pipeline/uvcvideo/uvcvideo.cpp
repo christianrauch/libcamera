@@ -554,6 +554,23 @@ int UVCCameraData::init(MediaDevice *media)
 		addControl(cid, info, &ctrls);
 	}
 
+	//	Control<Span<const float>> ColourGains;
+	//	Control<Span<const int32_t>> SensorBlackLevels;
+	//	Control<Span<const float>> ColourCorrectionMatrix;
+	//	Control<Span<const int64_t>> FrameDurationLimits;
+
+	// fake Span controls
+	ctrls.emplace(&controls::ColourGains, ControlInfo{ Span<const float>({ 0, 0 }), Span<const float>({ 1, 1 }), Span<const float>({ 0.5, 0.5 }) });
+	ctrls.emplace(&controls::SensorBlackLevels, ControlInfo{ Span<const int32_t>({ 0, 0, 0, 0 }), Span<const int32_t>({ 1, 1, 1, 1 }), Span<const int32_t>({ 0, 0, 0, 0 }) });
+	ctrls.emplace(&controls::ColourCorrectionMatrix, ControlInfo{
+								Span<const float>({ 0, 0, 0, 0, 0, 0, 0, 0, 0 }),
+								Span<const float>({ 1, 1, 1, 1, 1, 1, 1, 1, 1 }),
+								Span<const float>({ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 }) });
+	ctrls.emplace(&controls::FrameDurationLimits, ControlInfo{ Span<const int64_t>({ 0, 0 }), Span<const int64_t>({ 30, 30 }), Span<const int64_t>({ 10, 10 }) });
+
+	// fake ScalerCrop
+	ctrls.emplace(&controls::ScalerCrop, ControlInfo{ Rectangle(30, 30, 70, 70), Rectangle(40, 40, 50, 50) });
+
 	controlInfo_ = ControlInfoMap(std::move(ctrls), controls::controls);
 
 	/*

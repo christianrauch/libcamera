@@ -38,6 +38,11 @@ public:
 	{
 		return { -x, -y };
 	}
+
+	operator std::vector<int>() const
+	{
+		return { x, y };
+	}
 };
 
 bool operator==(const Point &lhs, const Point &rhs);
@@ -167,6 +172,11 @@ public:
 
 	Size &operator*=(float factor);
 	Size &operator/=(float factor);
+
+	operator std::vector<int>() const
+	{
+		return { static_cast<int>(width), static_cast<int>(height) };
+	}
 };
 
 bool operator==(const Size &lhs, const Size &rhs);
@@ -283,6 +293,11 @@ public:
 	__nodiscard Rectangle scaledBy(const Size &numerator,
 				       const Size &denominator) const;
 	__nodiscard Rectangle translatedBy(const Point &point) const;
+
+	operator std::vector<int>() const
+	{
+		return { x, y, static_cast<int>(width), static_cast<int>(height) };
+	}
 };
 
 bool operator==(const Rectangle &lhs, const Rectangle &rhs);

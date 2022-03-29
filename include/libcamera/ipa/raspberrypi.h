@@ -36,15 +36,30 @@ static const ControlInfoMap Controls({
 		{ &controls::AeExposureMode, ControlInfo(controls::AeExposureModeValues) },
 		{ &controls::ExposureValue, ControlInfo(-8.0f, 8.0f, 0.0f) },
 		{ &controls::AwbEnable, ControlInfo(false, true) },
-		{ &controls::ColourGains, ControlInfo(0.0f, 32.0f) },
+		{ &controls::ColourGains, ControlInfo{
+			 Span<const float>({ 0, 0 }),
+			 Span<const float>({ 32, 32 }),
+			 Span<const float>({ 0, 0 }),
+		  }
+		},
 		{ &controls::AwbMode, ControlInfo(controls::AwbModeValues) },
 		{ &controls::Brightness, ControlInfo(-1.0f, 1.0f, 0.0f) },
 		{ &controls::Contrast, ControlInfo(0.0f, 32.0f, 1.0f) },
 		{ &controls::Saturation, ControlInfo(0.0f, 32.0f, 1.0f) },
 		{ &controls::Sharpness, ControlInfo(0.0f, 16.0f, 1.0f) },
-		{ &controls::ColourCorrectionMatrix, ControlInfo(-16.0f, 16.0f) },
+		{ &controls::ColourCorrectionMatrix, ControlInfo{
+			Span<const float>({ -16, -16, -16, -16, -16, -16, -16, -16, -16 }),
+			Span<const float>({ 16, 16, 16, 16, 16, 16, 16, 16, 16 }),
+			Span<const float>({ 1, 0, 0, 0, 1, 0, 0, 0, 1 }),
+		  }
+		},
 		{ &controls::ScalerCrop, ControlInfo(Rectangle{}, Rectangle(65535, 65535, 65535, 65535), Rectangle{}) },
-		{ &controls::FrameDurationLimits, ControlInfo(INT64_C(1000), INT64_C(1000000000)) },
+		{ &controls::FrameDurationLimits, ControlInfo{
+			 Span<const int64_t>({ 1000, 1000 }),
+			 Span<const int64_t>({ 1000000000, 1000000000 }),
+			 Span<const int64_t>({ 1000, 1000 }),
+		   }
+		},
 		{ &controls::draft::NoiseReductionMode, ControlInfo(controls::draft::NoiseReductionModeValues) }
 	}, controls::controls);
 

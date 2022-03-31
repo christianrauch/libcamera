@@ -1706,9 +1706,9 @@ void RPiCameraData::statsMetadataComplete(uint32_t bufferId, const ControlList &
 	 * V4L2_CID_NOTIFY_GAINS control (which means notifyGainsUnity_ is set).
 	 */
 	if (notifyGainsUnity_ && controls.contains(libcamera::controls::ColourGains)) {
-		libcamera::Span<const float> colourGains =
+		libcamera::Span<const float, 2> colourGains =
 			controls.get(libcamera::controls::ColourGains).\
-				value_or(libcamera::Span<const float>({ 0, 0 }));
+				value_or(libcamera::Span<const float, 2>({ 0, 0 }));
 		/* The control wants linear gains in the order B, Gb, Gr, R. */
 		ControlList ctrls(sensor_->controls());
 		std::array<int32_t, 4> gains{

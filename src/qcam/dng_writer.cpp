@@ -438,8 +438,8 @@ int DNGWriter::write(const char *filename, const Camera *camera,
 	const double eps = 1e-2;
 
 	if (metadata.contains(controls::ColourGains)) {
-		Span<const float> const &colourGains =
-			metadata.get(controls::ColourGains).value_or(libcamera::Span<const float>({ 0, 0 }));
+		Span<const float, 2> const &colourGains =
+			metadata.get(controls::ColourGains).value_or(libcamera::Span<const float, 2>({ 0, 0 }));
 		if (colourGains[0] > eps && colourGains[1] > eps) {
 			wbGain = Matrix3d::diag(colourGains[0], 1, colourGains[1]);
 			neutral[0] = 1.0 / colourGains[0]; /* red */
@@ -447,8 +447,8 @@ int DNGWriter::write(const char *filename, const Camera *camera,
 		}
 	}
 	if (metadata.contains(controls::ColourCorrectionMatrix)) {
-		Span<const float> const &coeffs =
-			metadata.get(controls::ColourCorrectionMatrix).value_or(Span<const float>({ 0, 0, 0, 0, 0, 0, 0, 0, 0 }));
+		Span<const float, 9> const &coeffs =
+			metadata.get(controls::ColourCorrectionMatrix).value_or(Span<const float, 9>({ 0, 0, 0, 0, 0, 0, 0, 0, 0 }));
 		Matrix3d ccmSupplied(coeffs);
 		if (ccmSupplied.determinant() > eps)
 			ccm = ccmSupplied;
@@ -517,8 +517,8 @@ int DNGWriter::write(const char *filename, const Camera *camera,
 	uint32_t whiteLevel = (1 << info->bitsPerSample) - 1;
 
 	if (metadata.contains(controls::SensorBlackLevels)) {
-		Span<const int32_t> levels =
-			metadata.get(controls::SensorBlackLevels).value_or(Span<const int32_t>({ 0, 0, 0, 0 }));
+		Span<const int32_t, 4> levels =
+			metadata.get(controls::SensorBlackLevels).value_or(Span<const int32_t, 4>({ 0, 0, 0, 0 }));
 
 		/*
 		 * The black levels control is specified in R, Gr, Gb, B order.

@@ -7,6 +7,7 @@
 # gen-controls.py - Generate control definitions from YAML
 
 import argparse
+import math
 import string
 import sys
 import yaml
@@ -20,6 +21,25 @@ def format_description(description):
     description = description.strip('\n').split('\n')
     description[0] = '\\brief ' + description[0]
     return '\n'.join([(line and ' * ' or ' *') + line for line in description])
+
+
+def get_ctrl_type(ctrl):
+    ctrl_type = ctrl['type']
+    ctrl_size_arr = ctrl.get('size')
+    ctrl_is_span = ctrl_size_arr is not None
+
+    if ctrl_type == 'string':
+        return 'std::string'
+    elif ctrl_is_span:
+        ctrl_span_size = math.prod(ctrl_size_arr) if len(ctrl_size_arr) > 0 else None
+        if ctrl_span_size:
+            # fixed-sized Span
+            return f"Span<const {ctrl_type}, {ctrl_span_size}>"
+        else:
+            # variable-sized Span
+            return f"Span<const {ctrl_type}>"
+    else:
+        return ctrl_type
 
 
 def generate_cpp(controls):
@@ -50,11 +70,7 @@ ${description}
         name, ctrl = ctrl.popitem()
         id_name = snake_case(name).upper()
 
-        ctrl_type = ctrl['type']
-        if ctrl_type == 'string':
-            ctrl_type = 'std::string'
-        elif ctrl.get('size'):
-            ctrl_type = 'Span<const %s>' % ctrl_type
+        ctrl_type = get_ctrl_type(ctrl)
 
         info = {
             'name': name,
@@ -135,11 +151,7 @@ def generate_h(controls):
 
         ids.append('\t' + id_name + ' = ' + str(id_value) + ',')
 
-        ctrl_type = ctrl['type']
-        if ctrl_type == 'string':
-            ctrl_type = 'std::string'
-        elif ctrl.get('size'):
-            ctrl_type = 'Span<const %s>' % ctrl_type
+        ctrl_type = get_ctrl_type(ctrl)
 
         info = {
             'name': name,

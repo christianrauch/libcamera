@@ -365,7 +365,7 @@ CameraConfiguration::Status RPiCameraConfiguration::validate()
 	 * error means the platform can never run. Let's just print a warning
 	 * and continue regardless; the rotation is effectively set to zero.
 	 */
-	int32_t rotation = data_->sensor_->properties().get(properties::Rotation);
+	int32_t rotation = data_->sensor_->properties().get(properties::Rotation).value_or(int32_t{});
 	bool success;
 	Transform rotationTransform = transformFromRotation(rotation, &success);
 	if (!success)
@@ -1706,7 +1706,9 @@ void RPiCameraData::statsMetadataComplete(uint32_t bufferId, const ControlList &
 	 * V4L2_CID_NOTIFY_GAINS control (which means notifyGainsUnity_ is set).
 	 */
 	if (notifyGainsUnity_ && controls.contains(libcamera::controls::ColourGains)) {
-		libcamera::Span<const float> colourGains = controls.get(libcamera::controls::ColourGains);
+		libcamera::Span<const float> colourGains =
+			controls.get(libcamera::controls::ColourGains).\
+				value_or(libcamera::Span<const float>({ 0, 0 }));
 		/* The control wants linear gains in the order B, Gb, Gr, R. */
 		ControlList ctrls(sensor_->controls());
 		std::array<int32_t, 4> gains{
@@ -2041,7 +2043,7 @@ Rectangle RPiCameraData::scaleIspCrop(const Rectangle &ispCrop) const
 void RPiCameraData::applyScalerCrop(const ControlList &controls)
 {
 	if (controls.contains(controls::ScalerCrop)) {
-		Rectangle nativeCrop = controls.get<Rectangle>(controls::ScalerCrop);
+		Rectangle nativeCrop = controls.get<Rectangle>(controls::ScalerCrop).value_or(Rectangle{});
 
 		if (!nativeCrop.width || !nativeCrop.height)
 			nativeCrop = { 0, 0, 1, 1 };
@@ -2079,7 +2081,7 @@ void RPiCameraData::fillRequestMetadata(const ControlList &bufferControls,
 					Request *request)
 {
 	request->metadata().set(controls::SensorTimestamp,
-				bufferControls.get(controls::SensorTimestamp));
+				bufferControls.get(controls::SensorTimestamp).value_or(int64_t{}));
 
 	request->metadata().set(controls::ScalerCrop, scalerCrop_);
 }

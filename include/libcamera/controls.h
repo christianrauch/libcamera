@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 #include <libcamera/base/class.h>
 #include <libcamera/base/span.h>
@@ -167,7 +168,7 @@ public:
 
 		using V = typename T::value_type;
 		const V *value = reinterpret_cast<const V *>(data().data());
-		return { value, numElements_ };
+		return T{ value, numElements_ };
 	}
 
 #ifndef __DOXYGEN__
@@ -373,11 +374,11 @@ public:
 	bool contains(unsigned int id) const;
 
 	template<typename T>
-	T get(const Control<T> &ctrl) const
+	std::optional<T> get(const Control<T> &ctrl) const
 	{
 		const ControlValue *val = find(ctrl.id());
 		if (!val)
-			return T{};
+			return std::nullopt;
 
 		return val->get<T>();
 	}

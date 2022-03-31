@@ -124,7 +124,7 @@ public:
 	constexpr Span(element_type (&arr)[N],
 		       std::enable_if_t<std::is_convertible<std::remove_pointer_t<decltype(utils::data(arr))> (*)[],
 							    element_type (*)[]>::value &&
-					N == Extent,
+						N == Extent,
 					std::nullptr_t> = nullptr) noexcept
 		: data_(arr)
 	{
@@ -134,7 +134,7 @@ public:
 	constexpr Span(std::array<value_type, N> &arr,
 		       std::enable_if_t<std::is_convertible<std::remove_pointer_t<decltype(utils::data(arr))> (*)[],
 							    element_type (*)[]>::value &&
-					N == Extent,
+						N == Extent,
 					std::nullptr_t> = nullptr) noexcept
 		: data_(arr.data())
 	{
@@ -144,7 +144,7 @@ public:
 	constexpr Span(const std::array<value_type, N> &arr,
 		       std::enable_if_t<std::is_convertible<std::remove_pointer_t<decltype(utils::data(arr))> (*)[],
 							    element_type (*)[]>::value &&
-					N == Extent,
+						N == Extent,
 					std::nullptr_t> = nullptr) noexcept
 		: data_(arr.data())
 	{
@@ -153,10 +153,10 @@ public:
 	template<class Container>
 	explicit constexpr Span(Container &cont,
 				std::enable_if_t<!details::is_span<Container>::value &&
-						 !details::is_array<Container>::value &&
-						 !std::is_array<Container>::value &&
-						 std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
-								     element_type (*)[]>::value,
+							 !details::is_array<Container>::value &&
+							 !std::is_array<Container>::value &&
+							 std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
+									     element_type (*)[]>::value,
 						 std::nullptr_t> = nullptr)
 		: data_(utils::data(cont))
 	{
@@ -165,10 +165,10 @@ public:
 	template<class Container>
 	explicit constexpr Span(const Container &cont,
 				std::enable_if_t<!details::is_span<Container>::value &&
-						 !details::is_array<Container>::value &&
-						 !std::is_array<Container>::value &&
-						 std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
-								     element_type (*)[]>::value,
+							 !details::is_array<Container>::value &&
+							 !std::is_array<Container>::value &&
+							 std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
+									     element_type (*)[]>::value,
 						 std::nullptr_t> = nullptr)
 		: data_(utils::data(cont))
 	{
@@ -178,7 +178,7 @@ public:
 	template<class U, std::size_t N>
 	explicit constexpr Span(const Span<U, N> &s,
 				std::enable_if_t<std::is_convertible<U (*)[], element_type (*)[]>::value &&
-						 N == Extent,
+							 N == Extent,
 						 std::nullptr_t> = nullptr) noexcept
 		: data_(s.data())
 	{
@@ -235,10 +235,7 @@ public:
 		static_assert(Offset <= Extent, "Offset larger than size");
 		static_assert(Count == dynamic_extent || Count + Offset <= Extent,
 			      "Offset + Count larger than size");
-		return Span<element_type, Count != dynamic_extent ? Count : Extent - Offset>{
-			data() + Offset,
-			Count == dynamic_extent ? size() - Offset : Count
-		};
+		return Span < element_type, Count != dynamic_extent ? Count : Extent - Offset > { data() + Offset, Count == dynamic_extent ? size() - Offset : Count };
 	}
 
 	constexpr Span<element_type, dynamic_extent>
@@ -315,10 +312,10 @@ public:
 	template<class Container>
 	constexpr Span(Container &cont,
 		       std::enable_if_t<!details::is_span<Container>::value &&
-					!details::is_array<Container>::value &&
-					!std::is_array<Container>::value &&
-					std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
-							    element_type (*)[]>::value,
+						!details::is_array<Container>::value &&
+						!std::is_array<Container>::value &&
+						std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
+								    element_type (*)[]>::value,
 					std::nullptr_t> = nullptr)
 		: data_(utils::data(cont)), size_(utils::size(cont))
 	{
@@ -327,10 +324,10 @@ public:
 	template<class Container>
 	constexpr Span(const Container &cont,
 		       std::enable_if_t<!details::is_span<Container>::value &&
-					!details::is_array<Container>::value &&
-					!std::is_array<Container>::value &&
-					std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
-							    element_type (*)[]>::value,
+						!details::is_array<Container>::value &&
+						!std::is_array<Container>::value &&
+						std::is_convertible<std::remove_pointer_t<decltype(utils::data(cont))> (*)[],
+								    element_type (*)[]>::value,
 					std::nullptr_t> = nullptr)
 		: data_(utils::data(cont)), size_(utils::size(cont))
 	{

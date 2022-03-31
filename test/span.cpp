@@ -9,11 +9,11 @@
  * Include first to ensure the header is self-contained, as there's no span.cpp
  * in libcamera.
  */
-#include <libcamera/base/span.h>
-
 #include <array>
 #include <iostream>
 #include <vector>
+
+#include <libcamera/base/span.h>
 
 #include "test.h"
 

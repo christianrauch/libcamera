@@ -10,9 +10,12 @@
 #include <fcntl.h>
 #include <memory>
 #include <mutex>
-#include <queue>
 #include <unordered_set>
 #include <utility>
+
+#include <linux/bcm2835-isp.h>
+#include <linux/media-bus-format.h>
+#include <linux/videodev2.h>
 
 #include <libcamera/base/shared_fd.h>
 #include <libcamera/base/utils.h>
@@ -20,16 +23,13 @@
 #include <libcamera/camera.h>
 #include <libcamera/control_ids.h>
 #include <libcamera/formats.h>
-#include <libcamera/ipa/raspberrypi.h>
-#include <libcamera/ipa/raspberrypi_ipa_interface.h>
-#include <libcamera/ipa/raspberrypi_ipa_proxy.h>
 #include <libcamera/logging.h>
 #include <libcamera/property_ids.h>
 #include <libcamera/request.h>
 
-#include <linux/bcm2835-isp.h>
-#include <linux/media-bus-format.h>
-#include <linux/videodev2.h>
+#include <libcamera/ipa/raspberrypi.h>
+#include <libcamera/ipa/raspberrypi_ipa_interface.h>
+#include <libcamera/ipa/raspberrypi_ipa_proxy.h>
 
 #include "libcamera/internal/bayer_format.h"
 #include "libcamera/internal/camera.h"
@@ -41,6 +41,8 @@
 #include "libcamera/internal/media_device.h"
 #include "libcamera/internal/pipeline_handler.h"
 #include "libcamera/internal/v4l2_videodevice.h"
+
+#include <queue>
 
 #include "dma_heaps.h"
 #include "rpi_stream.h"
@@ -176,8 +178,12 @@ V4L2SubdeviceFormat findBestFormat(const SensorFormats &formatsMap, const Size &
 	return bestFormat;
 }
 
-enum class Unicam : unsigned int { Image, Embedded };
-enum class Isp : unsigned int { Input, Output0, Output1, Stats };
+enum class Unicam : unsigned int { Image,
+				   Embedded };
+enum class Isp : unsigned int { Input,
+				Output0,
+				Output1,
+				Stats };
 
 } /* namespace */
 
@@ -253,7 +259,10 @@ public:
 	 * thread. So, we do not need to have any mutex to protect access to any
 	 * of the variables below.
 	 */
-	enum class State { Stopped, Idle, Busy, IpaComplete };
+	enum class State { Stopped,
+			   Idle,
+			   Busy,
+			   IpaComplete };
 	State state_;
 
 	struct BayerFrame {
@@ -547,7 +556,6 @@ CameraConfiguration::Status RPiCameraConfiguration::validate()
 
 		cfg.stride = format.planes[0].bpl;
 		cfg.frameSize = format.planes[0].size;
-
 	}
 
 	return status;
@@ -654,8 +662,8 @@ CameraConfiguration *PipelineHandlerRPi::generateConfiguration(Camera *camera,
 				PixelFormat pf = mbusCodeToPixelFormat(format.first,
 								       BayerFormat::Packing::CSI2);
 				if (pf.isValid())
-					deviceFormats.emplace(std::piecewise_construct,	std::forward_as_tuple(pf),
-						std::forward_as_tuple(format.second.begin(), format.second.end()));
+					deviceFormats.emplace(std::piecewise_construct, std::forward_as_tuple(pf),
+							      std::forward_as_tuple(format.second.begin(), format.second.end()));
 			}
 		} else {
 			/*

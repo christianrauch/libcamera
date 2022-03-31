@@ -11,11 +11,11 @@
 #include <iostream>
 #include <map>
 
-#include <tiffio.h>
-
 #include <libcamera/control_ids.h>
 #include <libcamera/formats.h>
 #include <libcamera/property_ids.h>
+
+#include <tiffio.h>
 
 using namespace libcamera;
 
@@ -201,7 +201,7 @@ void packScanlineIPU3(void *output, const void *input, unsigned int width)
 			if (++x >= width)
 				return;
 
-			*out++ = (in[4] & 0xff) <<  8 | (in[3] & 0xc0) << 0;
+			*out++ = (in[4] & 0xff) << 8 | (in[3] & 0xc0) << 0;
 			if (++x >= width)
 				return;
 
@@ -235,8 +235,7 @@ void thumbScanlineIPU3([[maybe_unused]] const FormatInfo &info, void *output,
 		if (pixelInBlock == 24)
 			pixelInBlock--;
 
-		const uint8_t *in = static_cast<const uint8_t *>(input)
-				  + block * 32 + (pixelInBlock / 4) * 5;
+		const uint8_t *in = static_cast<const uint8_t *>(input) + block * 32 + (pixelInBlock / 4) * 5;
 
 		uint16_t val1, val2, val3, val4;
 		switch (pixelInBlock % 4) {
@@ -254,14 +253,14 @@ void thumbScanlineIPU3([[maybe_unused]] const FormatInfo &info, void *output,
 			break;
 		case 2:
 			val1 = (in[3] & 0x3f) << 10 | (in[2] & 0xf0) << 2;
-			val2 = (in[4] & 0xff) <<  8 | (in[3] & 0xc0) << 0;
+			val2 = (in[4] & 0xff) << 8 | (in[3] & 0xc0) << 0;
 			val3 = (in[stride + 3] & 0x3f) << 10 | (in[stride + 2] & 0xf0) << 2;
-			val4 = (in[stride + 4] & 0xff) <<  8 | (in[stride + 3] & 0xc0) << 0;
+			val4 = (in[stride + 4] & 0xff) << 8 | (in[stride + 3] & 0xc0) << 0;
 			break;
 		case 3:
-			val1 = (in[4] & 0xff) <<  8 | (in[3] & 0xc0) << 0;
+			val1 = (in[4] & 0xff) << 8 | (in[3] & 0xc0) << 0;
 			val2 = (in[6] & 0x03) << 14 | (in[5] & 0xff) << 6;
-			val3 = (in[stride + 4] & 0xff) <<  8 | (in[stride + 3] & 0xc0) << 0;
+			val3 = (in[stride + 4] & 0xff) << 8 | (in[stride + 3] & 0xc0) << 0;
 			val4 = (in[stride + 6] & 0x03) << 14 | (in[stride + 5] & 0xff) << 6;
 			break;
 		}
@@ -275,77 +274,77 @@ void thumbScanlineIPU3([[maybe_unused]] const FormatInfo &info, void *output,
 
 static const std::map<PixelFormat, FormatInfo> formatInfo = {
 	{ formats::SBGGR10_CSI2P, {
-		.bitsPerSample = 10,
-		.pattern = { CFAPatternBlue, CFAPatternGreen, CFAPatternGreen, CFAPatternRed },
-		.packScanline = packScanlineSBGGR10P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 10,
+					  .pattern = { CFAPatternBlue, CFAPatternGreen, CFAPatternGreen, CFAPatternRed },
+					  .packScanline = packScanlineSBGGR10P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SGBRG10_CSI2P, {
-		.bitsPerSample = 10,
-		.pattern = { CFAPatternGreen, CFAPatternBlue, CFAPatternRed, CFAPatternGreen },
-		.packScanline = packScanlineSBGGR10P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 10,
+					  .pattern = { CFAPatternGreen, CFAPatternBlue, CFAPatternRed, CFAPatternGreen },
+					  .packScanline = packScanlineSBGGR10P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SGRBG10_CSI2P, {
-		.bitsPerSample = 10,
-		.pattern = { CFAPatternGreen, CFAPatternRed, CFAPatternBlue, CFAPatternGreen },
-		.packScanline = packScanlineSBGGR10P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 10,
+					  .pattern = { CFAPatternGreen, CFAPatternRed, CFAPatternBlue, CFAPatternGreen },
+					  .packScanline = packScanlineSBGGR10P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SRGGB10_CSI2P, {
-		.bitsPerSample = 10,
-		.pattern = { CFAPatternRed, CFAPatternGreen, CFAPatternGreen, CFAPatternBlue },
-		.packScanline = packScanlineSBGGR10P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 10,
+					  .pattern = { CFAPatternRed, CFAPatternGreen, CFAPatternGreen, CFAPatternBlue },
+					  .packScanline = packScanlineSBGGR10P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SBGGR12_CSI2P, {
-		.bitsPerSample = 12,
-		.pattern = { CFAPatternBlue, CFAPatternGreen, CFAPatternGreen, CFAPatternRed },
-		.packScanline = packScanlineSBGGR12P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 12,
+					  .pattern = { CFAPatternBlue, CFAPatternGreen, CFAPatternGreen, CFAPatternRed },
+					  .packScanline = packScanlineSBGGR12P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SGBRG12_CSI2P, {
-		.bitsPerSample = 12,
-		.pattern = { CFAPatternGreen, CFAPatternBlue, CFAPatternRed, CFAPatternGreen },
-		.packScanline = packScanlineSBGGR12P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 12,
+					  .pattern = { CFAPatternGreen, CFAPatternBlue, CFAPatternRed, CFAPatternGreen },
+					  .packScanline = packScanlineSBGGR12P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SGRBG12_CSI2P, {
-		.bitsPerSample = 12,
-		.pattern = { CFAPatternGreen, CFAPatternRed, CFAPatternBlue, CFAPatternGreen },
-		.packScanline = packScanlineSBGGR12P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 12,
+					  .pattern = { CFAPatternGreen, CFAPatternRed, CFAPatternBlue, CFAPatternGreen },
+					  .packScanline = packScanlineSBGGR12P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SRGGB12_CSI2P, {
-		.bitsPerSample = 12,
-		.pattern = { CFAPatternRed, CFAPatternGreen, CFAPatternGreen, CFAPatternBlue },
-		.packScanline = packScanlineSBGGR12P,
-		.thumbScanline = thumbScanlineSBGGRxxP,
-	} },
+					  .bitsPerSample = 12,
+					  .pattern = { CFAPatternRed, CFAPatternGreen, CFAPatternGreen, CFAPatternBlue },
+					  .packScanline = packScanlineSBGGR12P,
+					  .thumbScanline = thumbScanlineSBGGRxxP,
+				  } },
 	{ formats::SBGGR10_IPU3, {
-		.bitsPerSample = 16,
-		.pattern = { CFAPatternBlue, CFAPatternGreen, CFAPatternGreen, CFAPatternRed },
-		.packScanline = packScanlineIPU3,
-		.thumbScanline = thumbScanlineIPU3,
-	} },
+					 .bitsPerSample = 16,
+					 .pattern = { CFAPatternBlue, CFAPatternGreen, CFAPatternGreen, CFAPatternRed },
+					 .packScanline = packScanlineIPU3,
+					 .thumbScanline = thumbScanlineIPU3,
+				 } },
 	{ formats::SGBRG10_IPU3, {
-		.bitsPerSample = 16,
-		.pattern = { CFAPatternGreen, CFAPatternBlue, CFAPatternRed, CFAPatternGreen },
-		.packScanline = packScanlineIPU3,
-		.thumbScanline = thumbScanlineIPU3,
-	} },
+					 .bitsPerSample = 16,
+					 .pattern = { CFAPatternGreen, CFAPatternBlue, CFAPatternRed, CFAPatternGreen },
+					 .packScanline = packScanlineIPU3,
+					 .thumbScanline = thumbScanlineIPU3,
+				 } },
 	{ formats::SGRBG10_IPU3, {
-		.bitsPerSample = 16,
-		.pattern = { CFAPatternGreen, CFAPatternRed, CFAPatternBlue, CFAPatternGreen },
-		.packScanline = packScanlineIPU3,
-		.thumbScanline = thumbScanlineIPU3,
-	} },
+					 .bitsPerSample = 16,
+					 .pattern = { CFAPatternGreen, CFAPatternRed, CFAPatternBlue, CFAPatternGreen },
+					 .packScanline = packScanlineIPU3,
+					 .thumbScanline = thumbScanlineIPU3,
+				 } },
 	{ formats::SRGGB10_IPU3, {
-		.bitsPerSample = 16,
-		.pattern = { CFAPatternRed, CFAPatternGreen, CFAPatternGreen, CFAPatternBlue },
-		.packScanline = packScanlineIPU3,
-		.thumbScanline = thumbScanlineIPU3,
-	} },
+					 .bitsPerSample = 16,
+					 .pattern = { CFAPatternRed, CFAPatternGreen, CFAPatternGreen, CFAPatternBlue },
+					 .packScanline = packScanlineIPU3,
+					 .thumbScanline = thumbScanlineIPU3,
+				 } },
 };
 
 int DNGWriter::write(const char *filename, const Camera *camera,
@@ -524,7 +523,8 @@ int DNGWriter::write(const char *filename, const Camera *camera,
 		 */
 		unsigned int green = (info->pattern[0] == CFAPatternRed ||
 				      info->pattern[1] == CFAPatternRed)
-				   ? 0 : 1;
+					     ? 0
+					     : 1;
 
 		for (unsigned int i = 0; i < 4; ++i) {
 			unsigned int level;

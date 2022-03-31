@@ -105,8 +105,6 @@ public:
 
 	static constexpr std::size_t extent = Extent;
 
-	template<bool Dependent = false,
-		 typename = std::enable_if_t<Dependent || Extent == 0>>
 	constexpr Span() noexcept
 		: data_(nullptr)
 	{

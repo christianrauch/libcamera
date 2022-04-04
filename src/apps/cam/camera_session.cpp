@@ -216,6 +216,8 @@ void CameraSession::listControls() const
 		std::cout << "  data size def/min/max?: " << info.def().data().size() << " / " << info.min().data().size() << " / " << info.max().data().size() << std::endl;
 		std::cout << "  data size (bytes) def/min/max?: " << info.def().data().size_bytes() << " / " << info.min().data().size_bytes() << " / " << info.max().data().size_bytes() << std::endl;
 
+		std::cout << "ext: " << decltype(controls::FrameDurationLimits)::type::extent << std::endl;
+
 		// extern const Control<Span<const int64_t>> FrameDurationLimits;
 		if (id->id() == libcamera::controls::FrameDurationLimits.id()) {
 			// std::cout << "  FrameDurationLimits type def/min/max: " << info.def().type() << "/" << info.min().type() << "/" << info.max().type() << std::endl;

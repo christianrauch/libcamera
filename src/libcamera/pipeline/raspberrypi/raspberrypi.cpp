@@ -365,13 +365,18 @@ CameraConfiguration::Status RPiCameraConfiguration::validate()
 	 * error means the platform can never run. Let's just print a warning
 	 * and continue regardless; the rotation is effectively set to zero.
 	 */
-	int32_t rotation = data_->sensor_->properties().get(properties::Rotation);
-	bool success;
-	Transform rotationTransform = transformFromRotation(rotation, &success);
-	if (!success)
-		LOG(RPI, Warning) << "Invalid rotation of " << rotation
-				  << " degrees - ignoring";
-	Transform combined = transform * rotationTransform;
+	int32_t *rotation = nullptr;
+	data_->sensor_->properties().get(properties::Rotation, rotation);
+	Transform combined = Transform::Identity;
+	if (rotation) {
+		bool success;
+		Transform rotationTransform = transformFromRotation(*rotation, &success);
+		if (!success)
+			LOG(RPI, Warning) << "Invalid rotation of " << *rotation
+					  << " degrees - ignoring";
+		combined = transform * rotationTransform;
+	}
+	delete rotation;
 
 	/*
 	 * We combine the platform and user transform, but must "adjust away"

@@ -1144,19 +1144,22 @@ int PipelineHandlerIPU3::registerCameras()
 						 &IPU3CameraData::frameStart);
 
 		/* Convert the sensor rotation to a transformation */
-		int32_t rotation = 0;
+		int32_t *rotation = nullptr;
 		if (data->properties_.contains(properties::Rotation))
-			rotation = data->properties_.get(properties::Rotation);
+			data->properties_.get(properties::Rotation, rotation);
 		else
 			LOG(IPU3, Warning) << "Rotation control not exposed by "
 					   << cio2->sensor()->id()
 					   << ". Assume rotation 0";
 
-		bool success;
-		data->rotationTransform_ = transformFromRotation(rotation, &success);
-		if (!success)
-			LOG(IPU3, Warning) << "Invalid rotation of " << rotation
-					   << " degrees: ignoring";
+		if (rotation) {
+			bool success;
+			data->rotationTransform_ = transformFromRotation(*rotation, &success);
+			if (!success)
+				LOG(IPU3, Warning) << "Invalid rotation of " << *rotation
+						   << " degrees: ignoring";
+		}
+		delete rotation;
 
 		ControlList ctrls = cio2->sensor()->getControls({ V4L2_CID_HFLIP });
 		if (!ctrls.empty())

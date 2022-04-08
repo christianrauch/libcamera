@@ -373,13 +373,13 @@ public:
 	bool contains(unsigned int id) const;
 
 	template<typename T>
-	T get(const Control<T> &ctrl) const
+	void get(const Control<T> &ctrl, T *value) const
 	{
 		const ControlValue *val = find(ctrl.id());
 		if (!val)
-			return T{};
+			value = nullptr;
 
-		return val->get<T>();
+		*value = val->get<T>();
 	}
 
 	template<typename T, typename V>

@@ -136,7 +136,7 @@ void CameraSession::listControls() const
 {
 	const ControlList &controls = camera_->controls();
 	if (controls.contains(libcamera::controls::FrameDurationLimits)) {
-		libcamera::Span<const int64_t> frame_lim = controls.get(libcamera::controls::FrameDurationLimits);
+		libcamera::Span<const int64_t> frame_lim = controls.get(libcamera::controls::FrameDurationLimits).value();
 		std::cout << "frame dur lim(" << frame_lim.size() << "): " << frame_lim[0] << " ... " << frame_lim[1] << std::endl;
 	}
 

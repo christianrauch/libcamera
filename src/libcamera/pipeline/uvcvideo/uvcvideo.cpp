@@ -560,13 +560,15 @@ int UVCCameraData::init(MediaDevice *media)
 	//	Control<Span<const int64_t>> FrameDurationLimits;
 
 	// fake Span controls
-	ctrls.emplace(&controls::ColourGains, ControlInfo{ Span<const float>({ 0, 0 }), Span<const float>({ 1, 1 }), Span<const float>({ 0.5, 0.5 }) });
-	ctrls.emplace(&controls::SensorBlackLevels, ControlInfo{ Span<const int32_t>({ 0, 0, 0, 0 }), Span<const int32_t>({ 1, 1, 1, 1 }), Span<const int32_t>({ 0, 0, 0, 0 }) });
-	ctrls.emplace(&controls::ColourCorrectionMatrix, ControlInfo{
-								Span<const float>({ 0, 0, 0, 0, 0, 0, 0, 0, 0 }),
-								Span<const float>({ 1, 1, 1, 1, 1, 1, 1, 1, 1 }),
-								Span<const float>({ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 }) });
-	ctrls.emplace(&controls::FrameDurationLimits, ControlInfo{ Span<const int64_t>({ 0, 0 }), Span<const int64_t>({ 30, 30 }), Span<const int64_t>({ 10, 10 }) });
+	//	ctrls.emplace(&controls::ColourGains, ControlInfo{ Span<const float>({ 0, 0 }), Span<const float>({ 1, 1 }), Span<const float>({ 0.5, 0.5 }) });
+	//	ctrls.emplace(&controls::SensorBlackLevels, ControlInfo{ Span<const int32_t>({ 0, 0 }), Span<const int32_t>({ 1, 1 }), Span<const int32_t>({ 0, 0 }) });
+	//	ctrls.emplace(&controls::ColourCorrectionMatrix, ControlInfo{ Span<const float>({ 0, 0 }), Span<const float>({ 1, 1 }), Span<const float>({ 0.5, 0.5 }) });
+	//	ctrls.emplace(&controls::FrameDurationLimits, ControlInfo{ Span<const int64_t>({ 0, 0 }), Span<const int64_t>({ 30, 30 }), Span<const int64_t>({ 10, 10 }) });
+
+	// fake Span controls with scalar bounds
+	ctrls.emplace(&controls::ColourGains, ControlInfo(0.0f, 32.0f));
+	ctrls.emplace(&controls::ColourCorrectionMatrix, ControlInfo(-16.0f, 16.0f));
+	ctrls.emplace(&controls::FrameDurationLimits, ControlInfo(INT64_C(1000), INT64_C(1000000000)));
 
 	// fake ScalerCrop
 	ctrls.emplace(&controls::ScalerCrop, ControlInfo{ Rectangle(30, 30, 70, 70), Rectangle(40, 40, 50, 50) });

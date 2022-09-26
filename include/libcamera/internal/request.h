@@ -37,6 +37,7 @@ public:
 	bool completeBuffer(FrameBuffer *buffer);
 	void complete();
 	void cancel();
+	void stop();
 	void reset();
 
 	void prepare(std::chrono::milliseconds timeout = 0ms);

@@ -158,6 +158,36 @@ void Request::Private::cancel()
 }
 
 /**
+ * \brief Stop a queued request
+ *
+ * Mark the request and its associated buffers as cancelled and complete it.
+ *
+ * Set each pending buffer in error state and emit the buffer completion signal
+ * before completing the Request.
+ */
+void Request::Private::stop()
+{
+	// LIBCAMERA_TRACEPOINT(request_cancel, this);
+
+	Request *request = _o<Request>();
+	ASSERT(request->status() == RequestPending);
+
+	// Request *request = _o<Request>();
+
+	request->status_ = RequestStopped;
+
+	for (FrameBuffer *buffer : pending_) {
+		buffer->_d()->cancel();
+		camera_->bufferCompleted.emit(request, buffer);
+	}
+
+	cancelled_ = true;
+	pending_.clear();
+	notifiers_.clear();
+	timer_.reset();
+}
+
+/**
  * \brief Reset the request internal data to default values
  *
  * After calling this function, all request internal data will have default

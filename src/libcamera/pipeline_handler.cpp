@@ -322,7 +322,8 @@ void PipelineHandler::stop(Camera *camera)
 		Request *request = waitingRequests_.front();
 		waitingRequests_.pop();
 
-		request->_d()->cancel();
+		// request->_d()->cancel();
+		request->_d()->stop();
 		completeRequest(request);
 	}
 

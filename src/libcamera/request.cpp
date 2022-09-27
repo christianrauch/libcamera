@@ -48,7 +48,7 @@ LOG_DEFINE_CATEGORY(Request)
  * \param camera The Camera that creates the request
  */
 Request::Private::Private(Camera *camera)
-	: camera_(camera), cancelled_(false)
+	: camera_(camera), cancelled_(false), stopped_(false)
 {
 }
 
@@ -100,6 +100,9 @@ bool Request::Private::completeBuffer(FrameBuffer *buffer)
 	if (buffer->metadata().status == FrameMetadata::FrameCancelled)
 		cancelled_ = true;
 
+	if (buffer->metadata().status == FrameMetadata::FrameStopped)
+		stopped_ = true;
+
 	return !hasPendingBuffers();
 }
 
@@ -118,6 +121,9 @@ void Request::Private::complete()
 	ASSERT(!hasPendingBuffers());
 
 	request->status_ = cancelled_ ? RequestCancelled : RequestComplete;
+
+	if (stopped_)
+		request->status_ = RequestStopped;
 
 	LOG(Request, Debug) << request->toString();
 

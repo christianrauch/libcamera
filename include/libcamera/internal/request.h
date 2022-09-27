@@ -53,6 +53,7 @@ private:
 
 	Camera *camera_;
 	bool cancelled_;
+	bool stopped_;
 	uint32_t sequence_ = 0;
 	bool prepared_ = false;
 

@@ -1943,7 +1943,7 @@ int V4L2VideoDevice::streamOff()
 		FrameBuffer *buffer = it.second;
 
 		cache_->put(it.first);
-		buffer->metadata_.status = FrameMetadata::FrameCancelled;
+		buffer->metadata_.status = FrameMetadata::FrameStopped;
 		bufferReady.emit(buffer);
 	}
 

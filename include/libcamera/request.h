@@ -36,6 +36,7 @@ public:
 		RequestPending,
 		RequestComplete,
 		RequestCancelled,
+		RequestStopped,
 	};
 
 	enum ReuseFlag {

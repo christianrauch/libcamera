@@ -48,15 +48,15 @@ libcamera_base_deps = [
 # the use of headers which must not be exposed to the libcamera public api.
 libcamera_base_args = [ '-DLIBCAMERA_BASE_PRIVATE' ]
 
-libcamera_base_lib = shared_library('libcamera-base',
-                                    [libcamera_base_sources, libcamera_base_headers],
-                                    version : libcamera_version,
-                                    soversion : libcamera_soversion,
-                                    name_prefix : '',
-                                    install : true,
-                                    cpp_args : libcamera_base_args,
-                                    include_directories : libcamera_includes,
-                                    dependencies : libcamera_base_deps)
+libcamera_base_lib = library('libcamera-base',
+                             [libcamera_base_sources, libcamera_base_headers],
+                             version : libcamera_version,
+                             soversion : libcamera_soversion,
+                             name_prefix : '',
+                             install : true,
+                             cpp_args : libcamera_base_args,
+                             include_directories : libcamera_includes,
+                             dependencies : libcamera_base_deps)
 
 libcamera_base = declare_dependency(sources : [
                                         libcamera_base_headers,

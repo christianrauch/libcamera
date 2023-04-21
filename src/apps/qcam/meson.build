@@ -1,13 +1,12 @@
 # SPDX-License-Identifier: CC0-1.0
 
-qt5 = import('qt5')
-qt5_dep = dependency('qt5',
-                     method : 'pkg-config',
-                     modules : ['Core', 'Gui', 'Widgets'],
-                     required : get_option('qcam'),
-                     version : '>=5.4')
+qt = import('qt6')
+qt_dep = dependency('qt6',
+                    modules : ['Core', 'Gui', 'Widgets', 'OpenGL', 'OpenGLWidgets'],
+                    required : get_option('qcam'),
+                    version : '>=6.2')
 
-if not qt5_dep.found()
+if not qt_dep.found()
     qcam_enabled = false
     subdir_done()
 endif
@@ -33,10 +32,10 @@ qcam_resources = files([
     'assets/feathericons/feathericons.qrc',
 ])
 
-qt5_cpp_args = [apps_cpp_args, '-DQT_NO_KEYWORDS']
+qt_cpp_args = [apps_cpp_args, '-DQT_NO_KEYWORDS']
 
 if cxx.has_header_symbol('QOpenGLWidget', 'QOpenGLWidget',
-                         dependencies : qt5_dep, args : '-fPIC')
+                         dependencies : qt_dep, args : '-fPIC')
     qcam_sources += files([
         'viewfinder_gl.cpp',
     ])
@@ -48,18 +47,9 @@ if cxx.has_header_symbol('QOpenGLWidget', 'QOpenGLWidget',
     ])
 endif
 
-# gcc 9 introduced a deprecated-copy warning that is triggered by Qt until
-# Qt 5.13. clang 10 introduced the same warning, but detects more issues
-# that are not fixed in Qt yet. Disable the warning manually in both cases.
-if ((cc.get_id() == 'gcc' and cc.version().version_compare('>=9.0') and
-     qt5_dep.version().version_compare('<5.13')) or
-    (cc.get_id() == 'clang' and cc.version().version_compare('>=10.0')))
-    qt5_cpp_args += ['-Wno-deprecated-copy']
-endif
-
-resources = qt5.preprocess(moc_headers : qcam_moc_headers,
-                           qresources : qcam_resources,
-                           dependencies : qt5_dep)
+resources = qt.preprocess(moc_headers : qcam_moc_headers,
+                          qresources : qcam_resources,
+                          dependencies : qt_dep)
 
 qcam  = executable('qcam', qcam_sources, resources,
                    install : true,
@@ -69,6 +59,6 @@ qcam  = executable('qcam', qcam_sources, resources,
                        libatomic,
                        libcamera_public,
                        libtiff,
-                       qt5_dep,
+                       qt_dep,
                    ],
-                   cpp_args : qt5_cpp_args)
+                   cpp_args : qt_cpp_args)

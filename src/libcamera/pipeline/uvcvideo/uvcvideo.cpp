@@ -573,6 +573,8 @@ int UVCCameraData::init(MediaDevice *media)
 	// fake ScalerCrop
 	ctrls.emplace(&controls::ScalerCrop, ControlInfo{ Rectangle(30, 30, 70, 70), Rectangle(40, 40, 50, 50) });
 
+	ctrls.emplace(&controls::AfWindows, ControlInfo(Rectangle{}, Rectangle(65535, 65535, 65535, 65535), Rectangle{}));
+
 	controlInfo_ = ControlInfoMap(std::move(ctrls), controls::controls);
 
 	/*

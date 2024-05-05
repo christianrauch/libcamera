@@ -28,6 +28,11 @@
   <depend>libssl-dev</depend>
   <depend>libudev-dev</depend>
 
+  <depend>libevent-dev</depend>
+  <depend>libdrm-dev</depend>
+  <depend>libjpeg</depend>
+  <depend>sdl2</depend>
+
   <!-- workaround for https://bugs.libcamera.org/show_bug.cgi?id=189 -->
   <depend>libatomic</depend>
 

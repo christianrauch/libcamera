@@ -575,9 +575,14 @@ int UVCCameraData::init(MediaDevice *media)
 
 	// ctrls.emplace(&controls::AfWindows, ControlInfo(Rectangle{}, Rectangle(65535, 65535, 65535, 65535), Rectangle{}));
 
-	const std::array<const Rectangle, 2> afwin_def{ Rectangle{}, Rectangle{} };
-	const std::array<const Rectangle, 2> afwin_min{ Rectangle{}, Rectangle{} };
-	const std::array<const Rectangle, 2> afwin_max{ Rectangle(65535, 65535, 65535, 65535), Rectangle(65535, 65535, 65535, 65535) };
+	// const std::array<const Rectangle, 2> afwin_def{ Rectangle{}, Rectangle{} };
+	// const std::array<const Rectangle, 2> afwin_min{ Rectangle{}, Rectangle{} };
+	// const std::array<const Rectangle, 2> afwin_max{ Rectangle(65535, 65535, 65535, 65535), Rectangle(65535, 65535, 65535, 65535) };
+	// ctrls.emplace(&controls::AfWindows, ControlInfo(ControlValue(Span<const Rectangle>(afwin_min)), ControlValue(Span<const Rectangle>(afwin_max)), ControlValue(Span<const Rectangle>(afwin_def))));
+
+	const std::array<const Rectangle, 1> afwin_def{ Rectangle{} };
+	const std::array<const Rectangle, 1> afwin_min{ Rectangle{} };
+	const std::array<const Rectangle, 1> afwin_max{ Rectangle(65535, 65535, 65535, 65535) };
 	ctrls.emplace(&controls::AfWindows, ControlInfo(ControlValue(Span<const Rectangle>(afwin_min)), ControlValue(Span<const Rectangle>(afwin_max)), ControlValue(Span<const Rectangle>(afwin_def))));
 
 	controlInfo_ = ControlInfoMap(std::move(ctrls), controls::controls);

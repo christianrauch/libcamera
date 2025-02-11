@@ -158,6 +158,13 @@ CameraSession::~CameraSession()
 
 void CameraSession::listControls() const
 {
+	const ControlList &controls = camera_->controls();
+	const std::optional<Span<const int64_t, 2>> fdl = controls.get(libcamera::controls::FrameDurationLimits);
+	if (fdl) {
+		const libcamera::Span<const int64_t> frame_lim = fdl.value();
+		std::cout << "frame dur lim(" << frame_lim.size() << "): " << frame_lim[0] << " ... " << frame_lim[1] << std::endl;
+	}
+
 	for (const auto &[id, info] : camera_->controls()) {
 		std::stringstream io;
 		io << "["
@@ -195,6 +202,32 @@ void CameraSession::listControls() const
 			else
 				std::cout << std::to_string(size);
 			std::cout << std::endl;
+		}
+
+		std::cout << "Control: " << id->name() << ": "
+			  << info.toString() << std::endl;
+
+		std::cout << "  Id type: " << id->type() << std::endl;
+
+		std::cout << "  value def: " << info.def().toString() << " | min/max: (" << info.min().toString() << ", " << info.max().toString() << ")" << std::endl;
+		std::cout << "  array def/min/max?: " << std::boolalpha << info.def().isArray() << " / " << info.min().isArray() << " / " << info.max().isArray() << std::endl;
+		std::cout << "  type def/min/max?: " << info.def().type() << "/" << info.min().type() << "/" << info.max().type() << std::endl;
+		std::cout << "  num def/min/max?: " << info.def().numElements() << " / " << info.min().numElements() << " / " << info.max().numElements() << std::endl;
+		std::cout << "  data size def/min/max?: " << info.def().data().size() << " / " << info.min().data().size() << " / " << info.max().data().size() << std::endl;
+		std::cout << "  data size (bytes) def/min/max?: " << info.def().data().size_bytes() << " / " << info.min().data().size_bytes() << " / " << info.max().data().size_bytes() << std::endl;
+
+		// extern const Control<Span<const int64_t>> FrameDurationLimits;
+		if (id->id() == libcamera::controls::FrameDurationLimits.id()) {
+			// std::cout << "  FrameDurationLimits type def/min/max: " << info.def().type() << "/" << info.min().type() << "/" << info.max().type() << std::endl;
+			if (info.def().type() == libcamera::ControlTypeInteger32) {
+				//				std::cout << "  FrameDurationLimits(i32) def: " << info.def().get<int32_t>() << std::endl;
+				const Span<const int32_t> v = info.def().get<Span<const int32_t>>();
+				std::cout << "  FrameDurationLimits(i32) def size: " << v.size() << std::endl;
+			} else if (info.def().type() == libcamera::ControlTypeInteger64) {
+				//				std::cout << "  FrameDurationLimits(i64) def: " << info.def().get<int64_t>() << std::endl;
+				const Span<const int64_t> v = info.def().get<Span<const int64_t>>();
+				std::cout << "  FrameDurationLimits(i64) def size: " << v.size() << std::endl;
+			}
 		}
 	}
 }

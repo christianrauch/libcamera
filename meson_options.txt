@@ -44,7 +44,7 @@ option('lc-compliance',
 
 option('pipelines',
         type : 'array',
-        value : ['auto'],
+        value : ['all'],
         choices : [
             'all',
             'auto',

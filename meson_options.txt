@@ -44,7 +44,7 @@ option('lc-compliance',
 
 option('pipelines',
         type : 'array',
-        value : ['all'],
+        value : ['ipu3', 'rpi/pisp', 'rpi/vc4', 'simple', 'uvcvideo'],
         choices : [
             'all',
             'auto',

@@ -23,7 +23,7 @@
   <build_depend>python3-ply</build_depend>
   <build_depend>python3-jinja2</build_depend>
   <build_depend>openssl</build_depend>
-  <build_depend condition="$ROS_DISTRO != 'humble'">pybind11-dev</build_depend>
+  <build_depend>pybind11-dev</build_depend>
 
   <depend>yaml</depend>
   <depend>libssl-dev</depend>

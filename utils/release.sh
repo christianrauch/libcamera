@@ -36,11 +36,12 @@ echo "Bumping $bump"
 echo "  Existing version is: $version"
 echo "  New version is : $new_version"
 
-# Patch in the version to our meson.build
+# Patch in the version to our meson.build and package.xml
 sed -i -E "s/ version : '.*',/ version : '$new_version',/" meson.build
+sed -i -E "s/<version>.*<\/version>/<version>$new_version<\/version>/" package.xml
 
 # Commit the update
-git commit meson.build -esm "libcamera v$new_version"
+git commit meson.build package.xml -esm "libcamera v$new_version"
 
 # Create a tag from that commit
 git show -s --format=%B | git tag "v$new_version" -s -F -

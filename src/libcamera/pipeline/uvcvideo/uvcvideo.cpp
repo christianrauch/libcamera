@@ -615,6 +615,8 @@ int UVCCameraData::init(std::shared_ptr<MediaDevice> media)
 		ctrls[&controls::AeEnable] = ControlInfo(false, true, true);
 	}
 
+	ctrls.emplace(&controls::FrameDurationLimits, ControlInfo{ INT64_C(0), INT64_C(30), Span<const int64_t, 2>({ 10, 10 }) });
+
 	controlInfo_ = ControlInfoMap(std::move(ctrls), controls::controls);
 
 	/*

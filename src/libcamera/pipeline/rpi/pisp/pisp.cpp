@@ -888,7 +888,17 @@ bool PipelineHandlerPiSP::match(DeviceEnumerator *enumerator)
 		std::shared_ptr<MediaDevice> cfeDevice = acquireMediaDevice(enumerator, cfe);
 
 		if (!cfeDevice) {
-			LOG(RPI, Debug) << "Unable to acquire a CFE instance";
+			LOG(RPI, Debug) << "Trying old entity search patterns for CFE instance";
+		}
+
+		cfe.clear();
+		cfe.add("rp1-cfe-fe_image0");
+		cfe.add("rp1-cfe-fe_stats");
+		cfe.add("rp1-cfe-fe_config");
+		cfeDevice = acquireMediaDevice(enumerator, cfe);
+
+		if (!cfeDevice) {
+			LOG(RPI, Debug) << "Unable to acquire CFE instance";
 			break;
 		}
 
@@ -1073,9 +1083,26 @@ int PipelineHandlerPiSP::platformRegister(std::unique_ptr<RPi::CameraData> &came
 	int ret;
 
 	MediaEntity *cfeImage = cfe->getEntityByName("rp1-cfe-fe-image0");
+	if (!cfeImage)
+	{
+		cfeImage = cfe->getEntityByName("rp1-cfe-fe_image0");
+	}
 	MediaEntity *cfeEmbedded = cfe->getEntityByName("rp1-cfe-csi2-ch1");
+	if (!cfeEmbedded)
+	{
+		cfeEmbedded = cfe->getEntityByName("rp1-cfe-embedded");
+	}
 	MediaEntity *cfeStats = cfe->getEntityByName("rp1-cfe-fe-stats");
+	if (!cfeStats)
+	{
+		cfeStats = cfe->getEntityByName("rp1-cfe-fe_stats");
+	}
 	MediaEntity *cfeConfig = cfe->getEntityByName("rp1-cfe-fe-config");
+	if (!cfeConfig)
+	{
+		cfeConfig = cfe->getEntityByName("rp1-cfe-fe_config");
+	}
+
 	MediaEntity *ispInput = isp->getEntityByName("pispbe-input");
 	MediaEntity *IpaPrepare = isp->getEntityByName("pispbe-config");
 	MediaEntity *ispOutput0 = isp->getEntityByName("pispbe-output0");
@@ -2158,8 +2185,9 @@ int PiSPCameraData::configureEntities(V4L2SubdeviceFormat sensorFormat,
 	int ret = 0;
 
 	constexpr unsigned int csiVideoSinkPad = 0;
-	constexpr unsigned int csiVideoSourcePad = 1;
-	constexpr unsigned int csiMetaSourcePad = 2;
+	constexpr unsigned int csiMetaSinkPad = 1;
+	constexpr unsigned int csiVideoSourcePad = 4;
+	constexpr unsigned int csiMetaSourcePad = 5;
 
 	constexpr unsigned int feVideoSinkPad = 0;
 	constexpr unsigned int feConfigSinkPad = 1;
@@ -2170,48 +2198,29 @@ int PiSPCameraData::configureEntities(V4L2SubdeviceFormat sensorFormat,
 	const MediaEntity *csi2 = csi2Subdev_->entity();
 	const MediaEntity *fe = feSubdev_->entity();
 
-	for (MediaLink *link : csi2->pads()[csiVideoSourcePad]->links()) {
-		if (link->sink()->entity()->name() == "rp1-cfe-csi2-ch0")
+	for (MediaLink *link : csi2->getPadByIndex(csiVideoSourcePad)->links()) {
+		if (link->sink()->entity()->name() == "rp1-cfe-csi2-ch0" || link->sink()->entity()->name() == "rp1-cfe-csi2_ch0")
 			link->setEnabled(false);
 		else if (link->sink()->entity()->name() == "pisp-fe")
 			link->setEnabled(true);
 	}
 
-	csi2->pads()[csiMetaSourcePad]->links()[0]->setEnabled(sensorMetadata_);
+	csi2->getPadByIndex(csiMetaSourcePad)->links()[0]->setEnabled(sensorMetadata_);
 
-	fe->pads()[feConfigSinkPad]->links()[0]->setEnabled(true);
-	fe->pads()[feVideo0SourcePad]->links()[0]->setEnabled(true);
-	fe->pads()[feVideo1SourcePad]->links()[0]->setEnabled(false);
-	fe->pads()[feStatsSourcePad]->links()[0]->setEnabled(true);
+	fe->getPadByIndex(feConfigSinkPad)->links()[0]->setEnabled(true);
+	fe->getPadByIndex(feVideo0SourcePad)->links()[0]->setEnabled(true);
+	fe->getPadByIndex(feVideo1SourcePad)->links()[0]->setEnabled(false);
+	fe->getPadByIndex(feStatsSourcePad)->links()[0]->setEnabled(true);
 
-	const V4L2Subdevice::Stream imageStream{
-		csiVideoSinkPad,
-		sensor_->imageStream().stream
-	};
-	const V4L2Subdevice::Stream embeddedDataStream{
-		csiVideoSinkPad,
-		sensor_->embeddedDataStream().value_or(V4L2Subdevice::Stream{}).stream
-	};
-
-	V4L2Subdevice::Routing routing;
-	routing.emplace_back(imageStream, V4L2Subdevice::Stream{ csiVideoSourcePad, 0 },
-			     V4L2_SUBDEV_ROUTE_FL_ACTIVE);
-
-	if (sensorMetadata_)
-		routing.emplace_back(embeddedDataStream,
-				     V4L2Subdevice::Stream{ csiMetaSourcePad, 0 },
-				     V4L2_SUBDEV_ROUTE_FL_ACTIVE);
-
-	ret = csi2Subdev_->setRouting(&routing);
-	if (ret)
-		return ret;
-
-	ret = csi2Subdev_->setFormat(imageStream, &sensorFormat);
+	ret = csi2Subdev_->setFormat(csiVideoSinkPad, &sensorFormat);
 	if (ret)
 		return ret;
 
 	if (sensorMetadata_) {
-		ret = csi2Subdev_->setFormat(embeddedDataStream, &embeddedFormat);
+		ret = csi2Subdev_->setFormat(csiMetaSinkPad, &embeddedFormat);
+		if (ret)
+			return ret;
+		ret = csi2Subdev_->setFormat(csiMetaSourcePad, &embeddedFormat);
 		if (ret)
 			return ret;
 	}

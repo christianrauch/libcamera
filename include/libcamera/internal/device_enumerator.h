@@ -28,6 +28,8 @@ public:
 
 	bool match(const MediaDevice *device) const;
 
+	void clear();
+
 private:
 	std::string driver_;
 	std::vector<std::string> entities_;

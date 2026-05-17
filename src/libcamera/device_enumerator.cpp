@@ -157,6 +157,14 @@ bool DeviceMatch::match(const MediaDevice *device) const
 }
 
 /**
+ * \brief Clear the entities search pattern vector
+ */
+void DeviceMatch::clear()
+{
+	entities_.clear();
+}
+
+/**
  * \class DeviceEnumerator
  * \brief Enumerate, store and search media devices
  *
